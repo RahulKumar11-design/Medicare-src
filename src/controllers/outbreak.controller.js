@@ -2,25 +2,51 @@ import {Report} from "../models/report.model.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
 
+// Update your getAlerts function to include disease info
 const getAlerts = asyncHandler(async (req, res) => {
-    // TODO: Get all cases on given location
-
     const { location } = req.params;
     const hoursBack = req.query.hours || 24;
-        
+    
     const outbreakData = await getOutbreakCasesForLocation(location, hoursBack);
-        
-        // Check if any disease crosses alert threshold
-    const alerts = outbreakData.filter(item => item.count >= 8);
+    
+    // Enhanced alerts with severity and disease info
+    const alerts = outbreakData
+        .filter(item => item.count >= 1)
+        .map(item => ({
+            disease: item.disease,
+            location: item.location,
+            count: item.count,
+            severity: calculateSeverity(item.count),
+            trend: "STABLE", // You can enhance this
+            lastReported: new Date().toISOString()
+        }));
 
-    return res.status(200)
-    .json(new ApiResponse(201,{
+    return res.status(200).json({
+        success: true,
+        data: {
             location: location,
             timeframe: `Last ${hoursBack} hours`,
             alerts: alerts,
-            totalReports: outbreakData.reduce((sum, item) => sum + item.count, 0)
-        },"Videos fetched successfully"));
+            totalReports: outbreakData.reduce((sum, item) => sum + item.count, 0),
+            alertLevel: getOverallAlertLevel(alerts)
+        },
+        message: "Alerts fetched successfully"
+    });
 });
+
+function calculateSeverity(count) {
+    if (count >= 15) return "CRITICAL";
+    if (count >= 10) return "HIGH"; 
+    if (count >= 8) return "MODERATE";
+    return "LOW";
+}
+
+function getOverallAlertLevel(alerts) {
+    if (alerts.some(alert => alert.count >= 15)) return "CRITICAL";
+    if (alerts.some(alert => alert.count >= 10)) return "HIGH";
+    if (alerts.length > 0) return "MODERATE";
+    return "LOW";
+}
 
 // Function to get outbreak cases for a specific location
 async function getOutbreakCasesForLocation(targetLocation, hoursBack = 24) {
