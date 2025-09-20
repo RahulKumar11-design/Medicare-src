@@ -23,15 +23,14 @@ app.use(cookieParser());
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Dashboard route (add this for the outbreak dashboard)
-app.get('/', (req, res) => {
-    res.render('dashboard.ejs');
-});
-
 import userRouter from "./routes/user.route.js";
 import outbreak from "./routes/outbreak.route.js";
+import ashaWorker from "./routes/ashaWorker.route.js";
+import vacciSchedule from "./routes/vacciSchedule.route.js";
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/outbreak", outbreak);
+app.use("/api/ashaWorker",ashaWorker);
+app.use("/api/vacciSchedule",vacciSchedule);
 
 export { app };

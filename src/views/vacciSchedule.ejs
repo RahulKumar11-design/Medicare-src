@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Vaccine Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #1e3c72 100%);
+            min-height: 100vh;
+            padding: 15px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(30, 60, 114, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 25px 40px;
+            border-bottom: 4px solid #144072;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header-subtitle {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .hospital-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .stats-bar {
+            background: #f8fafc;
+            padding: 20px 40px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 120px;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e3c72;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        .controls {
+            background: #ffffff;
+            padding: 25px 40px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 40px;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: #ffffff;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 16px;
+        }
+
+        .sort-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .sort-btn {
+            padding: 10px 18px;
+            background: #ffffff;
+            color: #1e3c72;
+            border: 2px solid #1e3c72;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sort-btn:hover {
+            background: #1e3c72;
+            color: white;
+        }
+
+        .sort-btn.active {
+            background: #1e3c72;
+            color: white;
+            box-shadow: 0 2px 8px rgba(30, 60, 114, 0.3);
+        }
+
+        .table-container {
+            background: #ffffff;
+            overflow-x: auto;
+            max-height: 70vh;
+        }
+
+        .appointments-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .appointments-table th {
+            background: #334155;
+            color: white;
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 3px solid #1e3c72;
+        }
+
+        .appointments-table th:hover {
+            background: #1e3c72;
+        }
+
+        .appointments-table th::after {
+            content: '⇅';
+            float: right;
+            opacity: 0.6;
+            font-size: 10px;
+        }
+
+        .appointments-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+        .appointments-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .appointments-table tr:nth-child(even) {
+            background: #fafbfc;
+        }
+
+        .appointments-table tr:nth-child(even):hover {
+            background: #f1f5f9;
+        }
+
+        .patient-name {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        .patient-id {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .vaccine-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .bcg { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+        .opv { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
+        .dpt { background: #d1fae5; color: #059669; border: 1px solid #a7f3d0; }
+        .hib { background: #fce7f3; color: #be185d; border: 1px solid #f9a8d4; }
+        .hepatitis-b { background: #ede9fe; color: #7c3aed; border: 1px solid #ddd6fe; }
+        .pneumococcal { background: #fef7ee; color: #ea580c; border: 1px solid #fed7aa; }
+        .rotavirus { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
+        .ipv { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+
+        .date-cell, .time-cell {
+            color: #475569;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .confirmed { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
+        .pending { background: #fef3c7; color: #ca8a04; border: 1px solid #fde68a; }
+        .cancelled { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+        .completed { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
+
+        .contact-info {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .footer {
+            background: #f8fafc;
+            padding: 20px 40px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 6px;
+            }
+
+            .header {
+                padding: 20px 20px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .controls {
+                padding: 20px 20px;
+            }
+
+            .controls-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-container {
+                max-width: none;
+            }
+
+            .sort-buttons {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .stats-bar {
+                padding: 15px 20px;
+            }
+
+            .appointments-table {
+                font-size: 12px;
+            }
+
+            .appointments-table th,
+            .appointments-table td {
+                padding: 10px 8px;
+            }
+
+            .footer {
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <div>
+                    <h1>Pediatric Immunization Management System</h1>
+                    <div class="header-subtitle">Infant Vaccination Schedule - Children Under 1 Year</div>
+                </div>
+                <div class="hospital-logo">
+                    <span>👶</span>
+                    <span>Pediatric Center</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-number" id="totalAppointments">0</span>
+                <span class="stat-label">Total Appointments</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="todayAppointments">0</span>
+                <span class="stat-label">Today's Schedule</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="confirmedCount">0</span>
+                <span class="stat-label">Confirmed</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="pendingCount">0</span>
+                <span class="stat-label">Pending</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="completedCount">0</span>
+                <span class="stat-label">Completed</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="controls-row">
+                <div class="search-container">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search by patient name, vaccine type, or status...">
+                    <span class="search-icon">🔍</span>
+                </div>
+                <div class="sort-buttons">
+                    <button class="sort-btn" onclick="sortTable('datetime')">Sort by Date & Time</button>
+                    <button class="sort-btn" onclick="sortTable('name')">Sort by Name</button>
+                    <button class="sort-btn" onclick="sortTable('status')">Sort by Status</button>
+                    <button class="sort-btn" onclick="resetTable()">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="appointments-table" id="appointmentsTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('name')">Child Details</th>
+                        <th onclick="sortTable('age')">Age (Months)</th>
+                        <th onclick="sortTable('vaccine')">Vaccine Type</th>
+                        <th onclick="sortTable('date')">Appointment Date</th>
+                        <th onclick="sortTable('time')">Time Slot</th>
+                        <th onclick="sortTable('status')">Status</th>
+                        <th onclick="sortTable('contact')">Parent Contact</th>
+                        <th>Medical Notes</th>
+                    </tr>
+                </thead>
+                <tbody id="appointmentsBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2025 Pediatric Immunization System | Confidential Medical Records | Authorized Healthcare Professionals Only</p>
+        </div>
+    </div>
+
+    <script>
+        // Pediatric vaccine appointments for infants under 1 year
+        let appointments = [
+            {
+                name: "Arjun",
+                patientId: "PD001234",
+                age: "2 months",
+                vaccine: "BCG",
+                date: "2025-09-22",
+                time: "09:30",
+                status: "confirmed",
+                contact: "+91-98765-43210",
+                notes: "Birth dose - healthy weight"
+            },
+            {
+                name: "Aadhya",
+                patientId: "PD001235",
+                age: "6 weeks",
+                vaccine: "OPV",
+                date: "2025-09-22",
+                time: "10:15",
+                status: "pending",
+                contact: "+91-98765-43211",
+                notes: "First dose - check fever"
+            },
+            {
+                name: "Vihaan",
+                patientId: "PD001236",
+                age: "3 months",
+                vaccine: "DPT",
+                date: "2025-09-22",
+                time: "11:00",
+                status: "confirmed",
+                contact: "+91-98765-43212",
+                notes: "Second dose - monitor reactions"
+            },
+            {
+                name: "Ananya",
+                patientId: "PD001237",
+                age: "4 months",
+                vaccine: "Hib",
+                date: "2025-09-23",
+                time: "08:45",
+                status: "confirmed",
+                contact: "+91-98765-43213",
+                notes: "First dose - premature baby"
+            },
+            {
+                name: "Karthik",
+                patientId: "PD001238",
+                age: "2 months",
+                vaccine: "Hepatitis B",
+                date: "2025-09-23",
+                time: "09:30",
+                status: "pending",
+                contact: "+91-98765-43214",
+                notes: "Birth dose missed - catch up"
+            },
+            {
+                name: "Ishaan",
+                patientId: "PD001239",
+                age: "6 months",
+                vaccine: "Pneumococcal",
+                date: "2025-09-23",
+                time: "14:20",
+                status: "completed",
+                contact: "+91-98765-43215",
+                notes: "Second dose completed"
+            },
+            {
+                name: "Kavya",
+                patientId: "PD001240",
+                age: "8 months",
+                vaccine: "Rotavirus",
+                date: "2025-09-24",
+                time: "10:00",
+                status: "cancelled",
+                contact: "+91-98765-43216",
+                notes: "Mild fever - rescheduled"
+            },
+            {
+                name: "Aditya",
+                patientId: "PD001241",
+                age: "4 months",
+                vaccine: "IPV",
+                date: "2025-09-24",
+                time: "11:45",
+                status: "confirmed",
+                contact: "+91-98765-43217",
+                notes: "Injectable polio - first dose"
+            },
+            {
+                name: "Prisha",
+                patientId: "PD001242",
+                age: "9 months",
+                vaccine: "DPT",
+                date: "2025-09-25",
+                time: "09:15",
+                status: "pending",
+                contact: "+91-98765-43218",
+                notes: "Booster dose - check allergies"
+            },
+            {
+                name: "Reyansh",
+                patientId: "PD001243",
+                age: "10 months",
+                vaccine: "Pneumococcal",
+                date: "2025-09-25",
+                time: "15:30",
+                status: "confirmed",
+                contact: "+91-98765-43219",
+                notes: "Final dose in series"
+            },
+            {
+                name: "Saanvi",
+                patientId: "PD001244",
+                age: "5 months",
+                vaccine: "Rotavirus",
+                date: "2025-09-26",
+                time: "08:00",
+                status: "confirmed",
+                contact: "+91-98765-43220",
+                notes: "Second dose - oral vaccine"
+            },
+            {
+                name: "Arnav",
+                patientId: "PD001245",
+                age: "11 months",
+                vaccine: "Hib",
+                date: "2025-09-26",
+                time: "12:30",
+                status: "pending",
+                contact: "+91-98765-43221",
+                notes: "Catch-up vaccination"
+            }
+        ];
+
+        let originalAppointments = [...appointments];
+        let currentSort = { field: null, direction: 'asc' };
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-IN', {
+                weekday: 'short',
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            });
+        }
+
+        function formatTime(timeStr) {
+            const [hours, minutes] = timeStr.split(':');
+            const date = new Date();
+            date.setHours(hours, minutes);
+            return date.toLocaleTimeString('en-IN', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+        }
+
+        function getVaccineClass(vaccine) {
+            return vaccine.toLowerCase().replace(/[^a-z]/g, '-');
+        }
+
+        function renderAppointments(appointmentList = appointments) {
+            const tbody = document.getElementById('appointmentsBody');
+            tbody.innerHTML = '';
+
+            appointmentList.forEach(appointment => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div class="patient-name">${appointment.name}</div>
+                        <div class="patient-id">ID: ${appointment.patientId}</div>
+                    </td>
+                    <td>${appointment.age}</td>
+                    <td><span class="vaccine-badge ${getVaccineClass(appointment.vaccine)}">${appointment.vaccine}</span></td>
+                    <td class="date-cell">${formatDate(appointment.date)}</td>
+                    <td class="time-cell">${formatTime(appointment.time)}</td>
+                    <td><span class="status-badge ${appointment.status}">${appointment.status.toUpperCase()}</span></td>
+                    <td class="contact-info">${appointment.contact}</td>
+                    <td style="font-size: 12px; color: #64748b;">${appointment.notes}</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            updateStats(appointmentList);
+        }
+
+        function updateStats(appointmentList = appointments) {
+            const today = new Date().toISOString().split('T')[0];
+           
+            document.getElementById('totalAppointments').textContent = appointmentList.length;
+            document.getElementById('todayAppointments').textContent =
+                appointmentList.filter(apt => apt.date === today).length;
+            document.getElementById('confirmedCount').textContent =
+                appointmentList.filter(apt => apt.status === 'confirmed').length;
+            document.getElementById('pendingCount').textContent =
+                appointmentList.filter(apt => apt.status === 'pending').length;
+            document.getElementById('completedCount').textContent =
+                appointmentList.filter(apt => apt.status === 'completed').length;
+        }
+
+        function sortTable(field) {
+            // Remove active class from all buttons
+            document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
+           
+            // Add active class to clicked button
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+
+            // Toggle sort direction if clicking the same field
+            if (currentSort.field === field) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.field = field;
+                currentSort.direction = 'asc';
+            }
+
+            appointments.sort((a, b) => {
+                let valueA, valueB;
+
+                switch(field) {
+                    case 'datetime':
+                        valueA = new Date(a.date + 'T' + a.time);
+                        valueB = new Date(b.date + 'T' + b.time);
+                        break;
+                    case 'date':
+                        valueA = new Date(a.date);
+                        valueB = new Date(b.date);
+                        break;
+                    case 'time':
+                        valueA = new Date('2025-01-01T' + a.time);
+                        valueB = new Date('2025-01-01T' + b.time);
+                        break;
+                    case 'name':
+                        valueA = a.name.toLowerCase();
+                        valueB = b.name.toLowerCase();
+                        break;
+                    case 'age':
+                        // Sort by months for proper age ordering
+                        const getMonths = (ageStr) => {
+                            const match = ageStr.match(/(\d+)\s*(month|week)/i);
+                            if (match) {
+                                const num = parseInt(match[1]);
+                                return match[2].toLowerCase().startsWith('week') ? num / 4.33 : num;
+                            }
+                            return 0;
+                        };
+                        valueA = getMonths(a.age);
+                        valueB = getMonths(b.age);
+                        break;
+                    case 'vaccine':
+                        valueA = a.vaccine.toLowerCase();
+                        valueB = b.vaccine.toLowerCase();
+                        break;
+                    case 'status':
+                        const statusOrder = { 'confirmed': 1, 'pending': 2, 'completed': 3, 'cancelled': 4 };
+                        valueA = statusOrder[a.status] || 5;
+                        valueB = statusOrder[b.status] || 5;
+                        break;
+                    case 'contact':
+                        valueA = a.contact.toLowerCase();
+                        valueB = b.contact.toLowerCase();
+                        break;
+                    default:
+                        return 0;
+                }
+
+                if (valueA < valueB) return currentSort.direction === 'asc' ? -1 : 1;
+                if (valueA > valueB) return currentSort.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            renderAppointments();
+        }
+
+        function resetTable() {
+            appointments = [...originalAppointments];
+            currentSort = { field: null, direction: 'asc' };
+            document.getElementById('searchInput').value = '';
+            document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
+            renderAppointments();
+        }
+
+        function searchAppointments() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+           
+            if (!searchTerm) {
+                appointments = [...originalAppointments];
+            } else {
+                appointments = originalAppointments.filter(appointment =>
+                    appointment.name.toLowerCase().includes(searchTerm) ||
+                    appointment.patientId.toLowerCase().includes(searchTerm) ||
+                    appointment.vaccine.toLowerCase().includes(searchTerm) ||
+                    appointment.status.toLowerCase().includes(searchTerm) ||
+                    appointment.contact.includes(searchTerm) ||
+                    appointment.notes.toLowerCase().includes(searchTerm)
+                );
+            }
+           
+            renderAppointments();
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', searchAppointments);
+
+        // Initialize the page
+        renderAppointments();
+
+        // Default sort by date and time
+        setTimeout(() => {
+            sortTable('datetime');
+        }, 100);
+    </script>
+</body>
+</html>

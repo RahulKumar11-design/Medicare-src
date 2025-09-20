@@ -96,4 +96,4 @@ async function getOutbreakCasesForLocation(targetLocation, hoursBack = 24) {
 
 export {
     getAlerts
-}
+};

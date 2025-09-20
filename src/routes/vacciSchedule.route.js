@@ -4,11 +4,8 @@ import {
 } from "../controllers/outbreak.controller.js";
 
 const router = Router();
-// api/outbreak/dashboard
+// api/vacciSchedule/dashboard
 router.route("/dashboard")
-.get(async (req,res) => res.render('outbreak.ejs'))
-
-router.route("/:location")
-.get(getAlerts);
+.get(async (req,res) => res.render('vacciSchedule.ejs'))
 
 export default router;

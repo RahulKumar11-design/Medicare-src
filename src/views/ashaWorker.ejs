@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header Styles */
+        .header {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-text h1 {
+            color: #0d47a1;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header-text p {
+            color: #1976d2;
+            font-size: 1.1rem;
+        }
+
+        .sync-button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .sync-button:hover {
+            background: #1976d2;
+        }
+
+        /* Statistics Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stat-card.blue { border-left: 4px solid #2196F3; }
+        .stat-card.red { border-left: 4px solid #f44336; }
+        .stat-card.green { border-left: 4px solid #4caf50; }
+        .stat-card.orange { border-left: 4px solid #ff9800; }
+
+        .stat-content h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-content p {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .stat-card.blue .stat-content { color: #0d47a1; }
+        .stat-card.red .stat-content { color: #c62828; }
+        .stat-card.green .stat-content { color: #2e7d32; }
+        .stat-card.orange .stat-content { color: #ef6c00; }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-card.blue .stat-icon { background: #e3f2fd; color: #1976d2; }
+        .stat-card.red .stat-icon { background: #ffebee; color: #d32f2f; }
+        .stat-card.green .stat-icon { background: #e8f5e8; color: #388e3c; }
+        .stat-card.orange .stat-icon { background: #fff3e0; color: #f57c00; }
+
+        /* Filters Section */
+        .filters {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+
+        .filters-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            padding: 12px 12px 12px 45px;
+            border: 2px solid #e3f2fd;
+            border-radius: 8px;
+            width: 280px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: #2196F3;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64b5f6;
+        }
+
+        .filter-select {
+            padding: 12px 16px;
+            border: 2px solid #e3f2fd;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .filter-select:focus {
+            border-color: #2196F3;
+        }
+
+        .export-button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .export-button:hover {
+            background: #1976d2;
+        }
+
+        /* Data Table */
+        .data-table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: #f5f5f5;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e3f2fd;
+        }
+
+        .table-header h2 {
+            color: #0d47a1;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #e3f2fd;
+        }
+
+        th {
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #1565c0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            transition: background-color 0.2s;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        tbody tr:hover {
+            background: #e3f2fd;
+        }
+
+        td {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e3f2fd;
+        }
+
+        .child-name {
+            font-weight: 600;
+            color: #0d47a1;
+        }
+
+        .dob {
+            color: #1976d2;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .contact {
+            color: #1976d2;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .age {
+            color: #1976d2;
+        }
+
+        .muac {
+            font-weight: 600;
+        }
+
+        .muac.low {
+            color: #d32f2f;
+        }
+
+        .muac.normal {
+            color: #1976d2;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge.yes {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .badge.no {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid;
+        }
+
+        .status-badge.sam {
+            background: #ffebee;
+            color: #c62828;
+            border-color: #ffcdd2;
+        }
+
+        .status-badge.normal {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border-color: #c8e6c9;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px 20px;
+            color: #1976d2;
+        }
+
+        .no-data i {
+            font-size: 3rem;
+            color: #90caf9;
+            margin-bottom: 16px;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            color: #1976d2;
+            gap: 10px;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e3f2fd;
+            border-top: 2px solid #2196F3;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #1976d2;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .filters-content {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group {
+                justify-content: center;
+            }
+
+            .search-input {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            th, td {
+                padding: 12px 16px;
+            }
+
+            .header-text h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="header-text">
+                    <h1>User Details Dashboard</h1>
+                    <p>Monitor and manage user health data efficiently</p>
+                </div>
+                <button class="sync-button" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i>
+                    Refresh Data
+                </button>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card blue">
+                <div class="stat-content">
+                    <h3 id="total-users">0</h3>
+                    <p>Total Users</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+
+            <div class="stat-card red">
+                <div class="stat-content">
+                    <h3 id="sam-count">0</h3>
+                    <p>SAM Cases</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+            </div>
+
+            <div class="stat-card green">
+                <div class="stat-content">
+                    <h3 id="normal-count">0</h3>
+                    <p>Normal Cases</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+
+            <div class="stat-card orange">
+                <div class="stat-content">
+                    <h3 id="odema-count">0</h3>
+                    <p>Odema Cases</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-activity"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filters-content">
+                <div class="filter-group">
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input 
+                            type="text" 
+                            class="search-input" 
+                            placeholder="Search by child name..." 
+                            id="search-input"
+                            oninput="filterData()"
+                        >
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-filter" style="color: #1976d2;"></i>
+                        <select class="filter-select" id="status-filter" onchange="filterData()">
+                            <option value="All">All Status</option>
+                            <option value="Normal">Normal</option>
+                            <option value="SAM">SAM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="export-button" onclick="exportData()">
+                    <i class="fas fa-download"></i>
+                    Export Data
+                </button>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="data-table-container">
+            <div class="table-header">
+                <h2>
+                    <i class="fas fa-table"></i>
+                    User Details (<span id="record-count">0</span> records)
+                </h2>
+            </div>
+            
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Child Name</th>
+                            <th>Contact</th>
+                            <th>Date of Birth</th>
+                            <th>Age</th>
+                            <th>MUAC (cm)</th>
+                            <th>Odema</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-table-body">
+                        <tr>
+                            <td colspan="7" class="loading">
+                                <div class="spinner"></div>
+                                Loading data...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2025 User Details Dashboard. Built with HTML, CSS & JavaScript.</p>
+        </div>
+    </div>
+
+    <script>
+        let userData = [];
+        let filteredData = [];
+
+        // Dummy data for demonstration (replace with API call)
+        const dummyData = [
+            {
+                id: 1,
+                childName: "Aarav Sharma",
+                dob: "2020-03-15",
+                muac: 12.5,
+                odema: "No",
+                status: "Normal",
+                contact: "+91 98765 43210"
+            },
+            {
+                id: 2,
+                childName: "Priya Patel",
+                dob: "2019-07-22",
+                muac: 11.2,
+                odema: "Yes",
+                status: "SAM",
+                contact: "+91 87654 32109"
+            },
+            {
+                id: 3,
+                childName: "Arjun Singh",
+                dob: "2021-01-10",
+                muac: 13.8,
+                odema: "No",
+                status: "Normal",
+                contact: "+91 76543 21098"
+            },
+            {
+                id: 4,
+                childName: "Ananya Gupta",
+                dob: "2020-09-05",
+                muac: 10.8,
+                odema: "Yes",
+                status: "SAM",
+                contact: "+91 65432 10987"
+            },
+            {
+                id: 5,
+                childName: "Rohan Kumar",
+                dob: "2019-12-18",
+                muac: 14.2,
+                odema: "No",
+                status: "Normal",
+                contact: "+91 54321 09876"
+            },
+            {
+                id: 6,
+                childName: "Kavya Reddy",
+                dob: "2020-06-30",
+                muac: 11.0,
+                odema: "No",
+                status: "SAM",
+                contact: "+91 43210 98765"
+            }
+        ];
+
+        // Calculate age from date of birth
+        function calculateAge(dob) {
+            const today = new Date();
+            const birthDate = new Date(dob);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+
+        // Format date to DD/MM/YYYY
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-GB');
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            const totalUsers = userData.length;
+            const samCount = userData.filter(user => user.status === 'SAM').length;
+            const normalCount = userData.filter(user => user.status === 'Normal').length;
+            const odemaCount = userData.filter(user => user.odema === 'Yes').length;
+
+            document.getElementById('total-users').textContent = totalUsers;
+            document.getElementById('sam-count').textContent = samCount;
+            document.getElementById('normal-count').textContent = normalCount;
+            document.getElementById('odema-count').textContent = odemaCount;
+        }
+
+        // Render table data
+        function renderTable(data) {
+            const tableBody = document.getElementById('data-table-body');
+            
+            if (data.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="no-data">
+                            <i class="fas fa-table"></i>
+                            <p>No records found matching your criteria</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tableBody.innerHTML = data.map((user, index) => `
+                <tr>
+                    <td class="child-name">${user.childName}</td>
+                    <td class="contact">
+                        <i class="fas fa-phone"></i>
+                        ${user.contact}
+                    </td>
+                    <td class="dob">
+                        <i class="fas fa-calendar"></i>
+                        ${formatDate(user.dob)}
+                    </td>
+                    <td class="age">${calculateAge(user.dob)} years</td>
+                    <td class="muac ${user.muac < 11.5 ? 'low' : 'normal'}">${user.muac}</td>
+                    <td>
+                        <span class="badge ${user.odema.toLowerCase()}">${user.odema}</span>
+                    </td>
+                    <td>
+                        <span class="status-badge ${user.status.toLowerCase()}">
+                            <i class="fas ${user.status === 'SAM' ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i>
+                            ${user.status}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+
+            document.getElementById('record-count').textContent = data.length;
+        }
+
+        // Filter data based on search and status
+        function filterData() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const statusFilter = document.getElementById('status-filter').value;
+
+            filteredData = userData.filter(user => {
+                const matchesSearch = user.childName.toLowerCase().includes(searchTerm);
+                const matchesStatus = statusFilter === 'All' || user.status === statusFilter;
+                return matchesSearch && matchesStatus;
+            });
+
+            renderTable(filteredData);
+        }
+
+        // Fetch data from backend (replace URL with your actual API endpoint)
+        async function fetchUserData() {
+            try {
+                // Replace this with your actual API call
+                // const response = await fetch('/api/users');
+                // const data = await response.json();
+                
+                // For demo purposes, using dummy data with delay
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                userData = dummyData;
+                filteredData = userData;
+                
+                updateStatistics();
+                renderTable(filteredData);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                document.getElementById('data-table-body').innerHTML = `
+                    <tr>
+                        <td colspan="7" class="no-data">
+                            <i class="fas fa-exclamation-triangle" style="color: #f44336;"></i>
+                            <p style="color: #f44336;">Error loading data. Please try again.</p>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Refresh data
+        function refreshData() {
+            document.getElementById('data-table-body').innerHTML = `
+                <tr>
+                    <td colspan="7" class="loading">
+                        <div class="spinner"></div>
+                        Refreshing data...
+                    </td>
+                </tr>
+            `;
+            fetchUserData();
+        }
+
+        // Export data to CSV
+        function exportData() {
+            const csvContent = "data:text/csv;charset=utf-8," 
+                + "Child Name,Contact,Date of Birth,Age,MUAC (cm),Odema,Status\n"
+                + filteredData.map(user => 
+                    `${user.childName},${user.contact},${formatDate(user.dob)},${calculateAge(user.dob)},${user.muac},${user.odema},${user.status}`
+                ).join("\n");
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "user_details.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Initialize dashboard on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchUserData();
+        });
+    </script>
+</body>
+</html>
