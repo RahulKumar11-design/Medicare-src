@@ -23,6 +23,10 @@ app.use(cookieParser());
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+app.get("/",async (req,res) => {
+    return res.render('home.ejs');
+});
+
 import userRouter from "./routes/user.route.js";
 import outbreak from "./routes/outbreak.route.js";
 import ashaWorker from "./routes/ashaWorker.route.js";
