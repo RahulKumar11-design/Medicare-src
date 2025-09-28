@@ -2,18 +2,14 @@ import serverless from "serverless-http";
 import { app } from "../src/app.js";
 import connectDB from "../src/db/index.js";
 
-// Connect DB once when the Lambda cold starts
-let connected = false;
-async function ensureDB() {
-  if (!connected) {
-    await connectDB();
-    connected = true;
-    console.log("✅ MongoDB connected (Vercel)");
-  }
-}
+let dbReady = false;
 
 const handler = async (req, res) => {
-  await ensureDB();
+  if (!dbReady) {
+    await connectDB();
+    dbReady = true;
+  }
+
   const wrapped = serverless(app);
   return wrapped(req, res);
 };
