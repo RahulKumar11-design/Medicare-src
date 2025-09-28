@@ -23,8 +23,8 @@ app.use(cookieParser());
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-app.get("/",async (req,res) => {
-    return res.render('home.ejs');
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/home.html"));
 });
 
 import userRouter from "./routes/user.route.js";
